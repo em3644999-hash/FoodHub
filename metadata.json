@@ -1,0 +1,6 @@
+{
+  "name": "FoodieHub - Online Food Ordering System with AI",
+  "description": "Full-stack food ordering platform featuring live menu browsing, cart & checkout, order tracking, admin dashboard, and AI-powered dish recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
