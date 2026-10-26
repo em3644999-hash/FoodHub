@@ -431,6 +431,13 @@ async function startServer() {
     }
   });
 
+  app.patch('/api/coupons/:id/toggle', requireAdmin, (req: Request, res: Response) => {
+    const coupon = db.getCoupons().find(c => c.id === req.params.id);
+    if (!coupon) return res.status(404).json({ error: 'Coupon not found' });
+    const updated = db.updateCoupon(req.params.id, { active: !coupon.active });
+    return res.json({ coupon: updated });
+  });
+
   app.delete('/api/coupons/:id', requireAdmin, (req: Request, res: Response) => {
     const deleted = db.deleteCoupon(req.params.id);
     if (!deleted) return res.status(404).json({ error: 'Coupon not found' });

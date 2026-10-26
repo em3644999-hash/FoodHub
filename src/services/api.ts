@@ -165,6 +165,25 @@ export const api = {
     return request<{ coupons: Coupon[] }>('/api/coupons');
   },
 
+  async createCoupon(data: Partial<Coupon>): Promise<{ coupon: Coupon }> {
+    return request<{ coupon: Coupon }>('/api/coupons', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  async toggleCoupon(id: string): Promise<{ coupon: Coupon }> {
+    return request<{ coupon: Coupon }>(`/api/coupons/${id}/toggle`, {
+      method: 'PATCH',
+    });
+  },
+
+  async deleteCoupon(id: string): Promise<{ success: boolean }> {
+    return request<{ success: boolean }>(`/api/coupons/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
   async validateCoupon(code: string, subtotal: number): Promise<{
     valid: boolean;
     discount: number;

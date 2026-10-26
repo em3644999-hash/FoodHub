@@ -26,6 +26,20 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, openA
   const { itemCount, openCart, total } = useCart();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [locationDropdownOpen, setLocationDropdownOpen] = useState(false);
+  const [selectedZone, setSelectedZone] = useState({
+    name: 'Indiranagar',
+    pincode: '560038',
+    eta: '25-30m',
+  });
+
+  const ZONES = [
+    { name: 'Indiranagar', pincode: '560038', eta: '25-30m' },
+    { name: 'Koramangala', pincode: '560034', eta: '20-25m' },
+    { name: 'HSR Layout', pincode: '560102', eta: '30-35m' },
+    { name: 'Whitefield', pincode: '560066', eta: '35-40m' },
+    { name: 'Jayanagar', pincode: '560041', eta: '30-35m' },
+  ];
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-stone-200/80 shadow-xs">
@@ -79,12 +93,47 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, setCurrentTab, openA
               </div>
             </button>
 
-            {/* Location Selector (Visual Indicator) */}
-            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100/90 text-stone-700 text-xs border border-stone-200">
-              <MapPin className="w-3.5 h-3.5 text-orange-600" />
-              <span className="font-semibold text-stone-900">Indiranagar</span>
-              <span className="text-stone-400">•</span>
-              <span className="text-stone-500">Bengaluru 560038</span>
+            {/* Location Selector (Interactive Zone Dropdown) */}
+            <div className="relative hidden md:block">
+              <button
+                type="button"
+                onClick={() => setLocationDropdownOpen(prev => !prev)}
+                className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-stone-100/90 hover:bg-orange-50 hover:border-orange-300 text-stone-700 text-xs border border-stone-200 transition-colors cursor-pointer"
+              >
+                <MapPin className="w-3.5 h-3.5 text-orange-600" />
+                <span className="font-semibold text-stone-900">{selectedZone.name}</span>
+                <span className="text-stone-400">•</span>
+                <span className="text-stone-500">{selectedZone.pincode}</span>
+                <ChevronDown className="w-3.5 h-3.5 text-stone-400" />
+              </button>
+
+              {locationDropdownOpen && (
+                <div
+                  className="absolute left-0 mt-2 w-64 rounded-2xl bg-white border border-stone-200 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95"
+                  onClick={() => setLocationDropdownOpen(false)}
+                >
+                  <div className="px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-wider text-stone-400 border-b border-stone-100">
+                    Select Delivery Zone
+                  </div>
+                  {ZONES.map(z => (
+                    <button
+                      key={z.name}
+                      onClick={() => setSelectedZone(z)}
+                      className={`w-full text-left px-3.5 py-2 text-xs flex items-center justify-between hover:bg-orange-50 cursor-pointer ${
+                        selectedZone.name === z.name ? 'text-orange-600 font-bold bg-orange-50/50' : 'text-stone-700'
+                      }`}
+                    >
+                      <div>
+                        <div>{z.name}</div>
+                        <div className="text-[10px] text-stone-400">PIN: {z.pincode}</div>
+                      </div>
+                      <span className="text-[11px] px-2 py-0.5 rounded-md bg-stone-100 text-stone-600 font-semibold">
+                        {z.eta}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

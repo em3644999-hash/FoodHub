@@ -114,6 +114,45 @@ export const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({
     window.print();
   };
 
+  const [simulating, setSimulating] = useState(false);
+
+  const handleSimulateProgression = async () => {
+    if (!order || isCancelled || order.orderStatus === 'delivered') return;
+    setSimulating(true);
+
+    const stepsRemaining: { status: OrderStatus; note: string }[] = [];
+    const sequence: { status: OrderStatus; note: string }[] = [
+      { status: 'confirmed', note: 'Kitchen accepted order & sent ticket to chefs' },
+      { status: 'preparing', note: 'Chef fired up stove and began fresh preparation' },
+      { status: 'out_for_delivery', note: 'Packed in thermal container, assigned to valet Suresh (KA-04-E-8812)' },
+      { status: 'delivered', note: 'Handed over warm to customer at door' },
+    ];
+
+    const currentIdx = sequence.findIndex(s => s.status === order.orderStatus);
+    const pending = sequence.slice(currentIdx + 1);
+
+    info('Demo Simulation Started', 'Advancing order steps automatically every 3.5s...');
+
+    for (const nextStep of pending) {
+      await new Promise(res => setTimeout(res, 3500));
+      try {
+        const res = await api.updateOrderStatus(order.id, nextStep.status, nextStep.note);
+        setOrder(res.order);
+        success(`Step: ${nextStep.status.replace(/_/g, ' ')}`, nextStep.note);
+        if (nextStep.status === 'delivered') {
+          try {
+            const confetti = (await import('canvas-confetti')).default;
+            confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+          } catch {}
+        }
+      } catch (err: any) {
+        error('Simulation interrupted', err.message);
+        break;
+      }
+    }
+    setSimulating(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Navigation & Header */}
@@ -126,17 +165,28 @@ export const OrderTrackingPage: React.FC<OrderTrackingPageProps> = ({
           <span>Back to All Orders</span>
         </button>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {!isCancelled && order.orderStatus !== 'delivered' && (
+            <button
+              onClick={handleSimulateProgression}
+              disabled={simulating}
+              className="px-3.5 py-1.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-700 border border-orange-200 text-xs font-bold flex items-center gap-1.5 cursor-pointer disabled:opacity-50 transition-colors shadow-xs"
+              title="Automatically simulate live order delivery steps for demonstration"
+            >
+              <RotateCcw className={`w-3.5 h-3.5 text-orange-600 ${simulating ? 'animate-spin' : ''}`} />
+              <span>{simulating ? 'Simulating Kitchen...' : '▶ Auto-Simulate Progress'}</span>
+            </button>
+          )}
           <button
             onClick={fetchOrder}
-            className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
             <RotateCcw className="w-3.5 h-3.5" />
             <span>Refresh</span>
           </button>
           <button
             onClick={handlePrint}
-            className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer"
+            className="px-3 py-1.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
             <Printer className="w-3.5 h-3.5" />
             <span>Print Receipt</span>
