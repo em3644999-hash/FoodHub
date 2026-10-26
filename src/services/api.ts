@@ -160,6 +160,13 @@ export const api = {
     });
   },
 
+  async addFoodReview(foodId: string, rating: number, comment?: string): Promise<{ food: FoodItem }> {
+    return request<{ food: FoodItem }>(`/api/foods/${foodId}/reviews`, {
+      method: 'POST',
+      body: JSON.stringify({ rating, comment }),
+    });
+  },
+
   // Coupons
   async getCoupons(): Promise<{ coupons: Coupon[] }> {
     return request<{ coupons: Coupon[] }>('/api/coupons');

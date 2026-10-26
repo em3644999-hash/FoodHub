@@ -1089,6 +1089,25 @@ class DatabaseService {
     return false;
   }
 
+  addFoodReview(foodId: string, review: { userName: string; rating: number; comment: string }): FoodItem | undefined {
+    const food = this.db.foodItems.find(f => f.id === foodId);
+    if (!food) return undefined;
+    if (!food.reviews) food.reviews = [];
+    const newRev = {
+      id: 'rev-' + Date.now(),
+      userName: review.userName || 'Anonymous Foodie',
+      rating: Math.max(1, Math.min(5, Number(review.rating) || 5)),
+      comment: review.comment || 'Delicious!',
+      createdAt: new Date().toISOString(),
+    };
+    food.reviews.unshift(newRev);
+    const totalScore = (food.rating * food.reviewsCount) + newRev.rating;
+    food.reviewsCount += 1;
+    food.rating = Math.round((totalScore / food.reviewsCount) * 10) / 10;
+    this.save();
+    return food;
+  }
+
   // --- Coupons ---
   getCoupons(): Coupon[] {
     return this.db.coupons;

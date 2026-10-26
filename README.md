@@ -28,6 +28,9 @@ FoodieHub is a production-grade full-stack online food ordering web application 
 - **Customer Account & AI Preferences**:
   - Profile management, delivery phone verification, and multiple saved addresses with default flags.
   - Foodie AI taste profiling (e.g., Pure Veg Only, Spicy Lover, Low Calorie, Jain Friendly).
+  - Customer dish reviews & 5-star ratings with live score updates.
+  - Interactive delivery zone selector (*Indiranagar*, *Koramangala*, *HSR Layout*, *Whitefield*, *Jayanagar*).
+  - Live 5-stage order tracking with "Auto-Simulate Kitchen Progress" demo tool.
   - Reorder previous meals with a single click.
   - Bookmarked favorite dishes.
 
@@ -39,7 +42,10 @@ FoodieHub is a production-grade full-stack online food ordering web application 
 - **Orders Management**:
   - Filterable order list by status (`placed`, `confirmed`, `preparing`, `out_for_delivery`, `delivered`, `cancelled`).
   - Search by order number, customer name, or phone number.
+  - **Export Orders to CSV**: One-click download of itemized transaction and revenue reports for audit and Excel accounting.
   - Live order status transition dropdown with custom kitchen activity notes.
+- **Coupons & Deals Management**:
+  - Full CRUD for promo vouchers: create percentage/fixed coupons, set minimum cart amounts, and toggle/pause codes with live usage counts.
 - **Food Menu CRUD**:
   - Add new dishes with image URL, category, vegetarian flag, spice level, preparation time, and allergens.
   - Instant one-click availability toggle (`Available` vs `Sold Out`).

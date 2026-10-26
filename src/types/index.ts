@@ -51,8 +51,17 @@ export interface FoodItem {
   isBestSeller?: boolean;
   isChefSpecial?: boolean;
   calories?: number;
+  reviews?: FoodReview[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface FoodReview {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  createdAt: string;
 }
 
 export interface CartItem {

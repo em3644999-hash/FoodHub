@@ -22,6 +22,7 @@ import {
   RotateCcw,
   ShieldCheck,
   Tag,
+  Download,
 } from 'lucide-react';
 import {
   AdminStats,
@@ -619,6 +620,67 @@ export const AdminDashboardPage: React.FC = () => {
                 <option value="delivered">Delivered</option>
                 <option value="cancelled">Cancelled</option>
               </select>
+
+              <button
+                type="button"
+                onClick={() => {
+                  if (orders.length === 0) {
+                    info('No Orders', 'There are no orders to export');
+                    return;
+                  }
+                  const headers = [
+                    'Order ID',
+                    'Order Number',
+                    'Date',
+                    'Customer Name',
+                    'Customer Phone',
+                    'Items Count',
+                    'Subtotal',
+                    'Discount',
+                    'Delivery Fee',
+                    'Tax',
+                    'Total',
+                    'Payment Method',
+                    'Payment Status',
+                    'Order Status',
+                    'Delivery Street',
+                    'City',
+                  ];
+                  const rows = orders.map(o => [
+                    `"${o.id}"`,
+                    `"${o.orderNumber}"`,
+                    `"${new Date(o.createdAt).toLocaleString()}"`,
+                    `"${o.customerName.replace(/"/g, '""')}"`,
+                    `"${o.customerPhone}"`,
+                    o.items.reduce((s, i) => s + i.quantity, 0),
+                    o.subtotal,
+                    o.discount,
+                    o.deliveryFee,
+                    o.tax,
+                    o.total,
+                    `"${o.paymentMethod}"`,
+                    `"${o.paymentStatus}"`,
+                    `"${o.orderStatus}"`,
+                    `"${o.deliveryAddress.street.replace(/"/g, '""')}"`,
+                    `"${o.deliveryAddress.city.replace(/"/g, '""')}"`,
+                  ]);
+                  const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+                  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                  const url = URL.createObjectURL(blob);
+                  const link = document.createElement('a');
+                  link.href = url;
+                  link.download = `FoodieHub_Orders_Report_${new Date().toISOString().slice(0, 10)}.csv`;
+                  document.body.appendChild(link);
+                  link.click();
+                  document.body.removeChild(link);
+                  success('Report Exported', 'Orders CSV downloaded successfully');
+                }}
+                className="px-3.5 py-2 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+                title="Download complete orders report in CSV"
+              >
+                <Download className="w-3.5 h-3.5 text-stone-500" />
+                <span>Export CSV</span>
+              </button>
             </div>
           </div>
 

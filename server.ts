@@ -349,6 +349,26 @@ async function startServer() {
     return res.json({ success: true });
   });
 
+  app.post('/api/foods/:id/reviews', authenticate, (req: Request, res: Response) => {
+    try {
+      const user = (req as any).user;
+      const { id } = req.params;
+      const { rating, comment } = req.body;
+      if (!rating) return res.status(400).json({ error: 'Rating (1-5) is required' });
+
+      const updated = db.addFoodReview(id, {
+        userName: user.name,
+        rating: Number(rating),
+        comment: comment ? String(comment).trim() : 'Great taste!',
+      });
+
+      if (!updated) return res.status(404).json({ error: 'Dish not found' });
+      return res.status(201).json({ food: updated });
+    } catch (err: any) {
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   // -------------------------------------------------------------
   // COUPONS
   // -------------------------------------------------------------
